@@ -6,19 +6,25 @@ const _m = {
     "update": "UPDATE"
 }
 
-const methods = (middlewares) => {
-    const obj = {}
-    Object.keys(_m).forEach((item) => {
+const setMethodMiddlewares = (obj) => {
+    for(let item in _m) {
         obj[item] = (path, middleware) => {
-            middlewares[path + "-" + item] = (req, res, next) => {
+            ++obj.middleWareCount
+            const key = String(obj.middleWareCount)
+            const middlewares = obj.middlewares
+            middlewares[key] = {}
+            middlewares[key]["function"] = async (req, res, next) => {
                 if (req.method === _m[item] && req.path === path) {
-                    middleware(req, res, next)
+                    await middleware(req, res, next)
+                } else {
+                    next()
                 }
-                next()
-            };
+            }
+            middlewares[key]["order"] = String(obj.middleWareCount + 1)
+            middlewares[key]["description"] = item + path
         }
-    })
+    }
     return obj
 }
 
-exports.methods = methods;
+exports.setMethodMiddlewares = setMethodMiddlewares

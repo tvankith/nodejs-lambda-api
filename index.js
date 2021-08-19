@@ -1,21 +1,27 @@
-const { methods } = require("./methods");
-const { uuidv4 } = require("./uuid");
+const { setMethodMiddlewares } = require("./methods");
 
 const api = () => {
     let middlewares = {};
     let obj = {
         req: {},
+        middleWareCount: -1,
         res: {
             "status": (status) => {
                 obj.status = status
             }
         },
         mw: [],
-        use: (mw) => {
-            if (typeof mw === "object") {
-                obj = { ...mw, ...obj }
-            } else if (typeof mw === "function") {
-                middlewares[uuidv4] = mw
+        use: (mwFunction) => {
+            if (typeof mwFunction === "function") {
+                ++obj.middleWareCount
+                const key = String(obj.middleWareCount)
+                middlewares[key] = {}
+                middlewares[key]["function"] = mwFunction
+                middlewares[key]["order"] = String(obj.middleWareCount)
+                middlewares[key]["description"] = "anonymous"
+                if(mwFunction.length === 4) {
+                    middlewares[key]["errorHandler"] = true
+                }
             }
         },
         handle: (event, context, callback) => {
@@ -34,19 +40,39 @@ const api = () => {
                     })
                 },
             }
+            obj.res.status = (status) => {
+                obj["status"] = status
+            }
+            obj.res.send = (status) => {
+                context.done(null, {
+                    statusCode: obj.status || 200,
+                })
+            }
             obj.next(obj.nextCounter)
         },
-        next: () => {
+        next: async () => {
             ++obj.nextCounter
-            if (middlewares[obj.mw[obj.nextCounter]]) {
-                middlewares[obj.mw[obj.nextCounter]](obj.req, obj.res, obj.next)
-            } else {
-                return
+            try {
+                if (middlewares[obj.nextCounter].function) {
+                    await middlewares[obj.nextCounter].function(obj.req, obj.res, obj.next)
+                } else {
+                    return
+                }
+                
+            } catch(err){
+                ++obj.nextCounter
+                while(middlewares[obj.nextCounter] && middlewares[obj.nextCounter].function && !middlewares[obj.nextCounter]["errorHandler"]) {
+                    ++obj.nextCounter
+                }
+                if(middlewares[obj.nextCounter] && middlewares[obj.nextCounter].function) {
+                    middlewares[obj.nextCounter].function(err, obj.req, obj.res, obj.next)
+                }
             }
+            
         },
         middlewares
     };
-    obj.use(methods(obj.middlewares))
+    setMethodMiddlewares(obj)
     return obj
 };
 exports.api = api;

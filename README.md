@@ -12,30 +12,37 @@ const { api } = require("nodejs-lambda-api");
 
 const app = api();
 
-module.exports.handle = (event, context, callback) => {
+app.use((req, res, next) => {
+    next()
+});
 
-    app.use((req, res, next) => {
-        next()
-    });
+app.get("/", (req, res, next) => {
+    res.status(200)
+    res.json({ data: "success" })
+})
 
-    app.get("/", (req, res, next) => {
-        res.status(200)
-        res.json({ data: "success" })
-    })
+app.post("/", (req, res, next) => {
+    const response = {
+        body: JSON.stringify({
+            message: "posted successfully",
+            input: req.body
+        })
+    };
+    res.status(200)
+    res.json(response)
+})
 
-    app.post("/", (req, res, next) => {
-        const response = {
-            body: JSON.stringify({
-                message: "posted successfully",
-                input: req.body
-            })
-        };
-        res.status(200)
-        res.json(response)
-    })
-    app.start(event, context, callback)
+app.use(function(req, res, next) {
+    res.status(404)
+    res.send()
+});
 
-};
+app.use(function(err, req, res, next) {
+    res.status(500)
+    res.send()
+});
+
+module.exports.handle = app.handle
 ```
 ### Aws Setup
 1. Set method to ANY
