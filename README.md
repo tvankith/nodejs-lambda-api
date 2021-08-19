@@ -1,7 +1,7 @@
 # nodejs-lambda-api
 
 ```
-const { api } = require("./api");
+const { api } = require("nodejs-lambda-api");
 
 module.exports.handle = async (event, context, callback) => {
 
