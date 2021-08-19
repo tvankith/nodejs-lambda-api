@@ -12,18 +12,18 @@ const { api } = require("nodejs-lambda-api");
 
 const app = api();
 
-module.exports.handle = async (event, context, callback) => {
+module.exports.handle = (event, context, callback) => {
 
     app.use((req, res, next) => {
         next()
     });
 
-    app.get("/", async (req, res, next) => {
+    app.get("/", (req, res, next) => {
         res.status(200)
         res.json({ data: "success" })
     })
 
-    app.post("/", async (req, res, next) => {
+    app.post("/", (req, res, next) => {
         const response = {
             body: JSON.stringify({
                 message: "posted successfully",
