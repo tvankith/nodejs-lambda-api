@@ -25,9 +25,12 @@ const api = () => {
             obj.res = {
                 "json": (body) => {
                     callback(null, {
-                        statusCode: 200,
+                        statusCode: obj.status || 200,
                         body: JSON.stringify(body)
                     })
+                },
+                "status": (status) => {
+                    obj.status = status
                 }
             }
             obj.next(obj.nextCounter)
