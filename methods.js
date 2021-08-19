@@ -1,4 +1,4 @@
-const methods = {
+const methods = (app) => ({
     "get": (path, middleware) => {
         app[path + "get"] = (req, res, next) => {
             if (req.method === "GET" && req.path === path) {
@@ -15,6 +15,6 @@ const methods = {
             next()
         };
     },
-}
+})
 
 exports.methods = methods;
