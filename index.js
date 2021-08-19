@@ -2,21 +2,25 @@ const { methods } = require("./methods");
 const { uuidv4 } = require("./uuid");
 
 const api = () => {
-    let app = {};
+    let middlewares = {};
     let obj = {
-        "nextCounter": -1,
         req: {},
-        res: {},
-        mw: [],
-        use: (mw)=> {
-            if(typeof mw === "object") {
-                obj = {...mw, ...obj}
-            } else if(typeof mw === "function") {
-                app[uuidv4] = mw
+        res: {
+            "status": (status) => {
+                obj.status = status
             }
         },
-        start: async (event, context, callback) => {
-            obj.mw = Object.keys(app)
+        mw: [],
+        use: (mw) => {
+            if (typeof mw === "object") {
+                obj = { ...mw, ...obj }
+            } else if (typeof mw === "function") {
+                middlewares[uuidv4] = mw
+            }
+        },
+        handle: (event, context, callback) => {
+            obj.nextCounter = -1
+            obj.mw = Object.keys(middlewares)
             obj.req = {
                 "body": event.body,
                 "method": event.httpMethod,
@@ -24,29 +28,25 @@ const api = () => {
             }
             obj.res = {
                 "json": (body) => {
-                    callback(null, {
+                    context.done(null, {
                         statusCode: obj.status || 200,
                         body: JSON.stringify(body)
                     })
                 },
-                "status": (status) => {
-                    obj.status = status
-                }
             }
-            await obj.next(obj.nextCounter)
+            obj.next(obj.nextCounter)
         },
-        next: async () => {
+        next: () => {
             ++obj.nextCounter
-            if (app[obj.mw[obj.nextCounter]]) {
-                await app[obj.mw[obj.nextCounter]](obj.req, obj.res, obj.next)
-                console.log("Hiii")
+            if (middlewares[obj.mw[obj.nextCounter]]) {
+                middlewares[obj.mw[obj.nextCounter]](obj.req, obj.res, obj.next)
             } else {
                 return
             }
         },
-        app
+        middlewares
     };
-    obj.use(methods(obj.app))
+    obj.use(methods(obj.middlewares))
     return obj
 };
 exports.api = api;

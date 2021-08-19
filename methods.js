@@ -6,15 +6,15 @@ const _m = {
     "update": "UPDATE"
 }
 
-const methods = (app) => {
+const methods = (middlewares) => {
     const obj = {}
     Object.keys(_m).forEach((item) => {
         obj[item] = (path, middleware) => {
-            app[path + "-" + item] = async (req, res, next) => {
+            middlewares[path + "-" + item] = (req, res, next) => {
                 if (req.method === _m[item] && req.path === path) {
-                    await middleware(req, res, next)
+                    middleware(req, res, next)
                 }
-                await next()
+                next()
             };
         }
     })
