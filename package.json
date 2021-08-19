@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/tvankith/nodejs-lambda-api.git"
   },
-  "keywords": [],
+  "keywords": ["node", "lambda", "middleware", "express", "api"],
   "author": "",
   "license": "ISC"
 }
