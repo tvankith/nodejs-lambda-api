@@ -1,20 +1,24 @@
-const methods = (app) => ({
-    "get": (path, middleware) => {
-        app[path + "get"] = (req, res, next) => {
-            if (req.method === "GET" && req.path === path) {
-                middleware(req, res, next)
-            }
-            next()
-        };
-    },
-    "post": (path, middleware) => {
-        app[path + "post"] = (req, res, next) => {
-            if (req.method === "POST" && req.path === path) {
-                middleware(req, res, next)
-            }
-            next()
-        };
-    },
-})
+const _m = {
+    "get": "GET",
+    "post": "POST",
+    "patch": "PATCH",
+    "delete": "DELETE",
+    "update": "UPDATE"
+}
+
+const methods = (app) => {
+    const obj = {}
+    Object.keys(_m).forEach((item) => {
+        obj[item] = (path, middleware) => {
+            app[path + "-" + item] = (req, res, next) => {
+                if (req.method === _m[item] && req.path === path) {
+                    middleware(req, res, next)
+                }
+                next()
+            };
+        }
+    })
+    return obj
+}
 
 exports.methods = methods;
