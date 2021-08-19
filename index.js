@@ -15,7 +15,7 @@ const api = () => {
                 app[uuidv4] = mw
             }
         },
-        start: (event, context, callback) => {
+        start: async (event, context, callback) => {
             obj.mw = Object.keys(app)
             obj.req = {
                 "body": event.body,
@@ -33,12 +33,13 @@ const api = () => {
                     obj.status = status
                 }
             }
-            obj.next(obj.nextCounter)
+            await obj.next(obj.nextCounter)
         },
-        next: () => {
+        next: async () => {
             ++obj.nextCounter
             if (app[obj.mw[obj.nextCounter]]) {
-                app[obj.mw[obj.nextCounter]](obj.req, obj.res, obj.next)
+                await app[obj.mw[obj.nextCounter]](obj.req, obj.res, obj.next)
+                console.log("Hiii")
             } else {
                 return
             }
