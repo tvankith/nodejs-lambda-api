@@ -36,3 +36,5 @@ module.exports.handle = async (event, context, callback) => {
 
 };
 ```
+### Aws Setup
+1. Set method to ANY
