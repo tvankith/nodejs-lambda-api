@@ -25,13 +25,15 @@ const api = () => {
             }
         },
         handle: (event, context, callback) => {
+            console.log("event", event)
             obj.nextCounter = -1
             obj.mw = Object.keys(middlewares)
             obj.status = 200
             obj.req = {
                 "body": event.body,
                 "method": event.httpMethod,
-                "path": event.path
+                "path": event.path,
+                "query": event.queryStringParameters
             }
             obj.res = {
                 "json": (body) => {
