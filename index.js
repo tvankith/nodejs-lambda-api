@@ -27,6 +27,7 @@ const api = () => {
         handle: (event, context, callback) => {
             obj.nextCounter = -1
             obj.mw = Object.keys(middlewares)
+            obj.status = 200
             obj.req = {
                 "body": event.body,
                 "method": event.httpMethod,
