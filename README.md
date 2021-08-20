@@ -1,5 +1,7 @@
 # nodejs-lambda-api
 
+Simple api builder for serverless lambda nodejs.
+
 ### Installation
 
 ```
@@ -47,13 +49,10 @@ module.exports.handle = app.handle
 ### Aws Setup
 1. Set method to ANY
 
-### Functions
-1. res.status
-2. res.json
-3. next
-4. app.use
-6. app.get
-7. app.post
-8. app.patch
-9. app.delete
-10. app.update
+### Built in middlewares
+1. app.use
+2. app.get
+3. app.post
+4. app.patch
+5. app.delete
+6. app.update
