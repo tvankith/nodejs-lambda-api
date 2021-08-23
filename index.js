@@ -36,11 +36,14 @@ const api = () => {
             }
             obj.res = {
                 "json": (body) => {
-                    context.done(null, {
+                    const response = {
                         statusCode: obj.status || 200,
-                        body: JSON.stringify(body)
-                    })
+                        body: JSON.stringify(body),
+                        headers: obj.res.headers
+                    }
+                    context.done(null, response)
                 },
+                "headers": {}
             }
             obj.res.status = (status) => {
                 obj["status"] = status
@@ -48,7 +51,11 @@ const api = () => {
             obj.res.send = (status) => {
                 context.done(null, {
                     statusCode: obj.status || 200,
+                    headers: obj.res.headers
                 })
+            }
+            obj.res.setHeaders = (key, value) => {
+                obj.res.headers[key] = value
             }
             obj.next(obj.nextCounter)
         },
