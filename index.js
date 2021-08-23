@@ -39,7 +39,7 @@ const api = () => {
                     const response = {
                         statusCode: obj.status || 200,
                         body: JSON.stringify(body),
-                        headers: obj.res.headers
+                        multiValueHeaders: obj.res.headers
                     }
                     context.done(null, response)
                 },
@@ -51,11 +51,11 @@ const api = () => {
             obj.res.send = (status) => {
                 context.done(null, {
                     statusCode: obj.status || 200,
-                    headers: obj.res.headers
+                    multiValueHeaders: obj.res.headers
                 })
             }
             obj.res.setHeaders = (key, value) => {
-                obj.res.headers[key] = value
+                obj.res.headers[key] = typeof value === "string" ? [value] : value
             }
             obj.next(obj.nextCounter)
         },
