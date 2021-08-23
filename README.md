@@ -14,6 +14,12 @@ const { api } = require("nodejs-lambda-api");
 
 const app = api();
 
+app.use((req, res, next)=> {
+    //Set Headers
+    res.setHeaders("Access-Control-Allow-Origin","*")
+    next()
+});
+
 app.use((req, res, next) => {
     next()
 });
